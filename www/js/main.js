@@ -5,11 +5,11 @@ function Position2D(x, y) {
     this.valuesFrom = function(other) {
         this.x = other.x;
         this.y = other.y;
-    }
+    };
     
     this.equals = function(other) {
         return this.x == other.x && this.y == other.y;
-    }
+    };
 }
 
 function CurvePlayer(startPos, color) {
