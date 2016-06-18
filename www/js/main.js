@@ -26,7 +26,7 @@ function CurvePlayer(startPos, color) {
     this.angle = 0;
     
     this.keyHandler = function(right, left) {
-        var constant = 10;
+        var constant = 20;
         
         // Increase / Decrease angle
         if(right) this.angle += constant;
@@ -63,6 +63,9 @@ function CurvePlayer(startPos, color) {
         this.lineData.forEach(function(pos) {
             ctx.lineTo(pos.x, pos.y);  
         });
+        
+        // Set width
+        ctx.lineWidth = 3;
         
         // Fill
         ctx.stroke();
@@ -108,10 +111,17 @@ $(document).ready(function() {
     $(window).resize(resizeHandler);
      
     // Create game 
-    var game = new Game(ctx, [new CurvePlayer(), new CurvePlayer(new Position2D(50, 50), "red")]);
+    var game = new Game(ctx, [
+        new CurvePlayer(), 
+        new CurvePlayer(new Position2D(50, 50), "red"),
+        new CurvePlayer(new Position2D(100, 100), "yellow"),
+        new CurvePlayer(new Position2D(150, 150), "green"),
+        new CurvePlayer(new Position2D(200, 200), "pink"),
+        new CurvePlayer(new Position2D(250, 250), "gold")
+    ]);
     
     // Keyboard handling
-    $(window).keydown(function(event) {
+    $(window).keyup(function(event) {
         game.keyHandler(
             (event.which == 68 || event.which == 39),
             (event.which == 65 || event.which == 37)
