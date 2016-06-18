@@ -13,6 +13,7 @@ function Position2D(x, y) {
 }
 
 function CurvePlayer(startPos, color) {
+    // Stroke color
     this.color = color || "blue";
     
     // Create default position if no position is set
@@ -82,15 +83,15 @@ function Game(ctx, curvePlayers) {
         this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         
         // Draw everything
-        this.curvePlayers.forEach(function(line) {
-            line.draw(this.ctx); 
+        this.curvePlayers.forEach(function(curvePlayer) {
+            curvePlayer.draw(this.ctx); 
         }, this);
     };
     
     // Forward pressed keys to all curves
     this.keyHandler = function(right, left) {
         this.curvePlayers.forEach(function(curvePlayer) {
-            curvePlayer.keyHandler.apply(curvePlayer, [right, left]); 
+            curvePlayer.keyHandler(right, left); 
         });  
     };
 }
