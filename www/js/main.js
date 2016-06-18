@@ -1,6 +1,50 @@
+function ServerInteraction() {
+    var url = "wss://" + window.location.host + "/";
+    var self = this;
+    this.isConnected = false;
+    this.connection = new WebSocket(url);
+    this.remotePlayerData = [];
+    
+    this.connection.onopen = function() {
+        self.isConnected = true;
+    };
+    
+    this.connection.onerror = function() {
+        self.isConnected = false;
+    };
+    
+    this.connection.onmessage = function(e) {
+        self.remotePlayerData = JSON.parse(e.data);
+    };
+    
+    this.getPlayers = function() {
+        var players = [];
+        this.remotePlayerData.forEach(function(json) {
+            var player = new CurvePlayer();
+            player.fromJSON(json);
+            
+            players.push(player);
+        });
+        
+        return players;
+    };
+    
+    this.send = function(curve) {
+        if(!this.isConnected)
+            return;
+            
+        this.connection.send(JSON.stringify(curve));
+    };
+}
+
 function Position2D(x, y) {
     this.x = x || 0;
     this.y = y || 0;
+    
+    this.fromJSON = function(json) {
+        this.x = json.x;
+        this.y = json.y;
+    };
     
     this.valuesFrom = function(other) {
         this.x = other.x;
@@ -25,6 +69,12 @@ function CurvePlayer(startPos, color) {
     
     // Start angle (0°)
     this.angle = 0;
+    
+    this.fromJSON = function(json) {
+        this.color = json.color;
+        this.lineData = json.lineData;
+        this.angle = json.angle;
+    };
     
     this.keyHandler = function(right, left) {
         var constant = 20;
@@ -73,26 +123,30 @@ function CurvePlayer(startPos, color) {
     };
 }
 
-function Game(ctx, curvePlayers) {
+function Game(ctx, serverInteraction) {
     this.ctx = ctx;
-    this.curvePlayers = curvePlayers || [];
+    this.player = new CurvePlayer();
+    this.serverInteraction = serverInteraction;
     
     // Draw all curves
     this.gameHandler = function() {
         // Clear canvas
         this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        this.player.calculatePosition();
+        // Send player object to the server
+        this.serverInteraction.send(this.player);
+        
+        var players = this.serverInteraction.getPlayers();
         
         // Draw everything
-        this.curvePlayers.forEach(function(curvePlayer) {
-            curvePlayer.draw(this.ctx); 
+        players.forEach(function(player) {
+            player.draw(this.ctx); 
         }, this);
     };
     
     // Forward pressed keys to all curves
     this.keyHandler = function(right, left) {
-        this.curvePlayers.forEach(function(curvePlayer) {
-            curvePlayer.keyHandler(right, left); 
-        });  
+        this.player.keyHandler(right, left);
     };
 }
 
@@ -101,8 +155,6 @@ $(document).ready(function() {
     
     // Resize canvas if window is resized
     function resizeHandler() {
-        
-        
         ctx.canvas.width = window.innerWidth;
         ctx.canvas.height = window.innerHeight;
         
@@ -115,16 +167,12 @@ $(document).ready(function() {
     
     // Add resize handler
     $(window).resize(resizeHandler);
-     
+    
+    var x = new ServerInteraction();
+    x.send(new CurvePlayer());
+    
     // Create game 
-    var game = new Game(ctx, [
-        new CurvePlayer(), 
-        new CurvePlayer(new Position2D(50, 50), "red"),
-        new CurvePlayer(new Position2D(100, 100), "yellow"),
-        new CurvePlayer(new Position2D(150, 150), "green"),
-        new CurvePlayer(new Position2D(200, 200), "pink"),
-        new CurvePlayer(new Position2D(250, 250), "gold")
-    ]);
+    var game = new Game(ctx, new ServerInteraction());
     
     // Keyboard handling
     $(window).keyup(function(event) {
