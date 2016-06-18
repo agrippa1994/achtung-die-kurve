@@ -101,8 +101,13 @@ $(document).ready(function() {
     
     // Resize canvas if window is resized
     function resizeHandler() {
+        
+        
         ctx.canvas.width = window.innerWidth;
         ctx.canvas.height = window.innerHeight;
+        
+        // Scale display
+        ctx.scale(window.innerWidth * (1/1920), window.innerHeight * (1/1080));
     }
     
     // Set default canvas size
