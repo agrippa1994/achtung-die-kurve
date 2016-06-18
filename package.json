@@ -1,0 +1,26 @@
+{
+  "name": "achtung-die-kurve",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "express": "^4.14.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agrippa1994/achtung-die-kurve.git"
+  },
+  "keywords": [
+    "game"
+  ],
+  "author": "Manuel Leitold",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agrippa1994/achtung-die-kurve/issues"
+  },
+  "homepage": "https://github.com/agrippa1994/achtung-die-kurve#readme"
+}
